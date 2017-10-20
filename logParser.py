@@ -1,20 +1,23 @@
-import re
-from collections import Counter
-
 #!/usr/bin/env python
 
-"""
-USAGE:
-logparsing_apache.py apache_log_file
-This script takes apache log file as an argument and then generates a report, with hostname,
-bytes transferred and status
-"""
+__doc__="\
+\n\nThis script takes apache log file as an argument and then generates a report\
+\n\
+\nSyntax : parser.py -o <absolute or relative path of file>\
+\n\
+\nExample parser.py -o sample.log \
+\n\
+"
+
+__VER__=1.0
 
 import sys
 import datetime
 import json
 import logging
-logging.basicConfig(level=logging.INFO)
+import optparse
+
+logger = logging.basicConfig(level=logging.INFO)
 
 initial_date = ""
 prev_date = ""
@@ -90,15 +93,50 @@ def final_report(logfile):
         logging.info(" Top Accessor user agent {} with hits = {}".format(value, agentDict[value]))
 
 if __name__ == "__main__":
-    if not len(sys.argv) > 1:
-        print (__doc__)
-        sys.exit(1)
-    infile_name = sys.argv[1]
-    try:
-        infile = open(infile_name, 'r')
-    except IOError:
-        print ("You must specify a valid file to parse")
-        print (__doc__)
-        sys.exit(1)
-    log_report = final_report(infile)
-    infile.close()
+    logging.debug('ARGV      :%s', sys.argv[1:])
+
+    parser = optparse.OptionParser(usage=__doc__)
+    parser.add_option('-o', '--output',
+                      dest="output_filename",
+                      default="sample.out",
+                      )
+    parser.add_option('-v', '--verbose',
+                      dest="verbose",
+                      default=False,
+                      action="store_true",
+                      )
+    parser.add_option('--version',
+                      dest="version",
+                      default=False,
+                      action='store_true'
+                      )
+
+    options, remainder = parser.parse_args()
+
+    if options.version:
+        logging.info("App Version = {}".format(__VER__))
+        sys.exit(0)
+
+    if options.output_filename :
+        try:
+            infile = open(options.output_filename, 'r')
+            if options.verbose:
+                print("IS TRUE!")
+                logger = logging.getLogger()
+                logger.setLevel(level=logging.DEBUG)
+                logger.debug("Is True")
+
+            log_report = final_report(infile)
+            infile.close()
+        except IOError:
+            logging.error("You must specify a valid file to parse")
+            logging.info(__doc__)
+            sys.exit(1)
+
+    logging.debug('VERSION   : %s', options.version)
+    logging.debug('VERBOSE   : %s', options.verbose)
+    logging.debug('OUTPUT    : %s', options.output_filename)
+    logging.debug('REMAINING : %s', remainder)
+    sys.exit(0)
+
+
