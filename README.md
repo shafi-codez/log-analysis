@@ -13,3 +13,5 @@ Uses :
 2. Scan the file & parse the file
 3. Has ability to set the log level for debugging
 4. App version can be known
+
+[![asciicast](https://asciinema.org/a/6Bi5ktxpMKkQ7C6GGllHvacZF.png)](https://asciinema.org/a/6Bi5ktxpMKkQ7C6GGllHvacZF)
